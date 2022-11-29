@@ -125,7 +125,7 @@ def other_occuring_symptoms(select_list):
     dict_symp = dict(Counter(counter_list))
     dict_symp_tup = sorted(dict_symp.items(), key=operator.itemgetter(1),reverse=True)     
 
-    return {"other-sym": dict_symp_tup, "final-sym": final_symp}
+    return dict_symp_tup
 
 def predict_probability(final_symp):
     sample_x = [0 for x in range(0,len(dataset_symptoms))]
@@ -165,7 +165,8 @@ def predict_probability(final_symp):
     topk_index_mapping = {}
     topk_sorted = dict(sorted(topk_dict.items(), key=lambda kv: kv[1], reverse=True))  
 
-    return topk_sorted
+    final_disease = [(key, topk_sorted[key]) for key in topk_sorted]
+    return final_disease
 
 def disease_info(disease):
     return diseaseDetail(disease)                                 
