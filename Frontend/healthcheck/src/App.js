@@ -1,17 +1,23 @@
-import Test from "./pages/symptoms";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./util/routes";
+import UserContext from './context/user';
+import useAuthListener from './hooks/use-auth-listener';
+
 
 function App() {
+
+  const user = useAuthListener();
+
   return (
-    <BrowserRouter>
-      <div className="App">
-        <header className="App-header">
-          <p className='text-xl font-bold text-center'>Health Check in making</p>
-        </header>
-        <AppRoutes />
-      </div>
-    </BrowserRouter>
+
+    <UserContext.Provider value={user}  >
+      <BrowserRouter>
+        <div className="App">
+          <AppRoutes />
+        </div>
+      </BrowserRouter>
+    </UserContext.Provider>
+
   );
 }
 

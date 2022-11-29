@@ -1,9 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from script import disease_info, synonymous_symptoms, other_occuring_symptoms, predict_probability
-from typing import Union
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -16,7 +13,12 @@ class Disease(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {
+        "check synonym symptoms at": "/synonymous-symptoms",
+        "co-occuring symptoms at" : "/coocurring-symptoms",
+        "predict disease at" : "/predict-disease",
+        "disease info at" : "/disease-detail/disease"
+    }
 
 @app.post("/synonymous-symptoms")
 async def synonym(disease: Disease):
@@ -28,9 +30,7 @@ async def similar_symptoms(sym: Sym):
 
 @app.post("/predict-disease")
 async def predict_disease(final_symp: list):
-    json_compatible_item_data = jsonable_encoder(predict_probability(final_symp))
-    return JSONResponse(content=json_compatible_item_data)
-    # return predict_probability(final_symp)
+    return predict_probability(final_symp)
 
 @app.get("/disease-detail/{disease}")
 async def diseaseinfo(disease):
