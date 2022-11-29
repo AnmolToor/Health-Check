@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import FirebaseContext from "../context/firebase";
 import UserContext from "../context/user";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logoImg from '../assets/logo.jpg'
 
 export default function Header() {
@@ -36,7 +36,7 @@ export default function Header() {
                                         title="Sign Out"
                                         onClick={() => firebase.auth().signOut().then()}
                                         onKeyDown={(event) => {
-                                            if (event.key == 'Enter') {
+                                            if (event.key === 'Enter') {
                                                 firebase.auth().signOut();
                                                 // history(`/login`);
                                             }
