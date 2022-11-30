@@ -3,6 +3,9 @@ import Header from "../components/header";
 import { BACKURL } from "../util/backend";
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { addNewDisease } from "../services/firebase";
+import { useContext } from "react";
+import UserContext from "../context/user";
 
 export default function CheckDisease() {
     const [checkNum, setCheckNum] = useState(0);
@@ -15,6 +18,9 @@ export default function CheckDisease() {
     const [otherOccuringSymptoms, setOtherOccuringSymptoms] = useState()
 
     const [diseases, setDiseases] = useState()
+
+    const { user } = useContext(UserContext);
+    console.log(user.uid)
 
     const isInvalid = userInput === '';
     console.log('other', userSelectedSymptoms)
@@ -31,9 +37,8 @@ export default function CheckDisease() {
     const handleUserSelectedSymptoms = async () => {
         if (userSelectedSymptoms.length <= 0) {
             toast.warning("Select Symptoms First!")
-            console.log("here i am")
         } else {
-            console.log(userSelectedSymptoms)
+            toast.success("Checking for other commonly occuring diseases")
             await axios.post(`${BACKURL}/coocurring-symptoms`, { "symptom_list": userSelectedSymptoms }).then((res) => {
                 setOtherOccuringSymptoms(res.data)
                 setCheckNum((checkNum) => checkNum + 1)
@@ -43,12 +48,23 @@ export default function CheckDisease() {
     }
 
     const handleFinalSymptoms = async () => {
+        toast.success("Wait checking possible disease")
         await axios.post(`${BACKURL}/predict-disease`, { "final_symp": userSelectedSymptoms }).then((res) => {
-            console.log(res.data)
+            uploadToFirestore(user.uid, res.data, userSelectedSymptoms)
             setDiseases(res.data)
             setCheckNum((checkNum) => checkNum + 1)
         })
     }
+
+    const uploadToFirestore = async (userId, diseases, userSelectedSymptoms) => {
+        let obj = {};
+
+        diseases.forEach((v) => {
+            obj[v[0]] = v[1];
+        });
+        await addNewDisease(userId, obj, userSelectedSymptoms)
+    }
+
 
     return (
         <div>
